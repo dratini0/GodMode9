@@ -190,7 +190,9 @@ int WriteVirtualFile(const VirtualFile* vfile, const void* buffer, u64 offset, u
         return WriteVNandFile(vfile, buffer, offset, count);
     } else if (vfile->flags & VRT_MEMORY) {
         return WriteVMemFile(vfile, buffer, offset, count);
-    } // no write support for virtual game / tickdb / keydb / cart / vram files
+    } else if (vfile->flags & VRT_CART) {
+        return WriteVCartFile(vfile, buffer, offset, count);
+    } // no write support for virtual game / tickdb / keydb / vram files
     
     return -1;
 }
