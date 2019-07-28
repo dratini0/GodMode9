@@ -107,17 +107,13 @@ int CardSPIWriteRead(CardSPIType type, const void* cmd, u32 cmdSize, void* answe
 
     REG_CFG9_CARDCTL |= CARDCTL_SPICARD;
 
-    if (type.infrared) {
-        SPI_XferInfo irXfer = { &headerFooterVal, 1, false };
-        SPI_DoXfer(SPI_DEV_CART_IR, &irXfer, 1, false);
-    }
-
-    SPI_XferInfo transfers[3] = {
+    SPI_XferInfo transfers[4] = {
+        { &headerFooterVal, type.infrared, false },
         { (u8*) cmd, cmdSize, false },
         { answer, answerSize, true },
         { (u8*) data, dataSize, false },
     };
-    SPI_DoXfer(SPI_DEV_CART_FLASH, transfers, 3, true);
+    SPI_DoXfer(type.infrared ? SPI_DEV_CART_IR : SPI_DEV_CART_FLASH, transfers, 4, true);
 
     REG_CFG9_CARDCTL &= ~CARDCTL_SPICARD;
     
