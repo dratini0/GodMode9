@@ -70,7 +70,7 @@ bool ReadVCartDir(VirtualFile* vfile, VirtualDir* vdir) {
             vfile->size = strnlen(info, 255);
             vfile->flags |= VFLAG_GAMECART_NFO;
             return true;
-        } else if ((vdir->index == 8) && cdata->save_type.chip) { // JEDEC id and status register
+        } else if (vdir->index == 8) { // JEDEC id and status register
             strcpy(vfile->name, "jedecid_and_sreg.bin");
             vfile->size = JEDECID_AND_SREG_SIZE;
             vfile->flags |= VFLAG_JEDECID_AND_SRFG;
