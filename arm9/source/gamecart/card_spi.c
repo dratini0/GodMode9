@@ -79,6 +79,8 @@ const CardSPITypeData flashTypes[] = {
     { CardSPIEnableWriting_regular, CardSPIReadSaveData_24bit, CardSPIWriteSaveData_24bit_erase_program, CardSPIEraseSector_real, 0xC22211, 1 << 17, 4096, 32, 4096, SPI_FLASH_CMD_PW, SPI_CMD_PP, SPI_FLASH_CMD_MXIC_SE },
     { CardSPIEnableWriting_regular, CardSPIReadSaveData_24bit, CardSPIWriteSaveData_24bit_erase_program, CardSPIEraseSector_real, 0xC22213, 1 << 19, 4096, 32, 4096, SPI_FLASH_CMD_PW, SPI_CMD_PP, SPI_FLASH_CMD_MXIC_SE },
     { CardSPIEnableWriting_regular, CardSPIReadSaveData_24bit, CardSPIWriteSaveData_24bit_erase_program, CardSPIEraseSector_real, 0xC22214, 1 << 20, 4096, 32, 4096, SPI_FLASH_CMD_PW, SPI_CMD_PP, SPI_FLASH_CMD_MXIC_SE },
+    { CardSPIEnableWriting_regular, CardSPIReadSaveData_24bit, CardSPIWriteSaveData_24bit_erase_program, CardSPIEraseSector_real, 0x622611, 1 << 23, 4096, 256, 4096, SPI_FLASH_CMD_PW, SPI_CMD_PP, SPI_FLASH_CMD_MXIC_SE },
+    { CardSPIEnableWriting_regular, CardSPIReadSaveData_24bit, CardSPIWriteSaveData_24bit_erase_program, CardSPIEraseSector_real, 0x622613, 1 << 23, 4096, 256, 4096, SPI_FLASH_CMD_PW, SPI_CMD_PP, SPI_FLASH_CMD_MXIC_SE },
 };
 
 const CardSPITypeData * const EEPROM_512B = &EEPROM_512B_;
