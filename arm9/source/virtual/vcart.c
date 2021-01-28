@@ -2,6 +2,7 @@
 #include "gamecart.h"
 
 #define FAT_LIMIT   0x100000000
+#define VFLAG_SFDP              (1UL<<27)
 #define VFLAG_GAMECART_NFO      (1UL<<28)
 #define VFLAG_JEDECID_AND_SRFG  (1UL<<29)
 #define VFLAG_SAVEGAME          (1UL<<30)
@@ -34,7 +35,7 @@ bool ReadVCartDir(VirtualFile* vfile, VirtualDir* vdir) {
     vfile->keyslot = 0xFF; // unused
     vfile->flags = VFLAG_READONLY;
 
-    while (++vdir->index <= 8) {
+    while (++vdir->index <= 9) {
         if ((vdir->index == 0) && (cdata->data_size < FAT_LIMIT)) { // standard full rom
             snprintf(vfile->name, 32, "%s.%s", name, ext);
             vfile->size = cdata->cart_size;
@@ -75,6 +76,11 @@ bool ReadVCartDir(VirtualFile* vfile, VirtualDir* vdir) {
             vfile->size = JEDECID_AND_SREG_SIZE;
             vfile->flags |= VFLAG_JEDECID_AND_SRFG;
             return true;
+        } else if (vdir->index == 9) { // JEDEC id and status register
+            strcpy(vfile->name, "sfdp.bin");
+            vfile->size = SFDP_SIZE;
+            vfile->flags |= VFLAG_SFDP;
+            return true;
         }
     }
 
@@ -92,6 +98,8 @@ int ReadVCartFile(const VirtualFile* vfile, void* buffer, u64 offset, u64 count)
         return ReadCartInfo(buffer, foffset, count, cdata);
     else if (vfile->flags & VFLAG_JEDECID_AND_SRFG)
         return ReadCartSaveJedecId(buffer, foffset, count, cdata);
+    else if (vfile->flags & VFLAG_SFDP)
+        return ReadCartSFDP(buffer, foffset, count, cdata);
     else return ReadCartBytes(buffer, foffset, count, cdata);
 }
 

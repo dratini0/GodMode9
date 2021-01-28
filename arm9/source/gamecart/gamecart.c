@@ -333,3 +333,9 @@ u32 ReadCartSaveJedecId(u8* buffer, u64 offset, u64 count, CartData* cdata) {
     memcpy(buffer, ownBuf + offset, count);
     return 0;
 }
+
+u32 ReadCartSFDP(u8* buffer, u64 offset, u64 count, CartData* cdata) {
+    if (offset >= SFDP_SIZE) return 1;
+    if (offset + count > SFDP_SIZE) count = SFDP_SIZE - offset;
+    return (CardSPIReadSFDP(cdata->save_type, offset, buffer, count) == 0) ? 0 : 1;
+}

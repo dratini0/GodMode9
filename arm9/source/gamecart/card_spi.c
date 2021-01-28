@@ -389,6 +389,12 @@ int CardSPIErase(CardSPIType type) {
     return 0;
 }
 
+int CardSPIReadSFDP(CardSPIType type, u32 offset, void* data, u32 size) {
+    u8 cmd[5] = { 0x5A, (u8)(offset >> 16), (u8)(offset >> 8), (u8) offset, 0x00 };
+
+    return CardSPIWriteRead(type, cmd, 4, data, size, NULL, 0);
+}
+
 // The following routine use code from savegame-manager:
 
 /*

@@ -77,6 +77,7 @@ u32 CardSPIGetEraseSize(CardSPIType type);
 
 int CardSPIWriteSaveData(CardSPIType type, u32 offset, const void* data, u32 size);
 int CardSPIReadSaveData(CardSPIType type, u32 offset, void* data, u32 size);
+int CardSPIReadSFDP(CardSPIType type, u32 offset, void* data, u32 size);
 
 int CardSPIEraseSector(CardSPIType type, u32 offset);
 int CardSPIErase(CardSPIType type);
