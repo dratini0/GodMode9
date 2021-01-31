@@ -8,6 +8,8 @@
 #include "ncsd.h"
 #include "rtc.h"
 
+#include "ui.h"
+
 #define CART_INSERTED (!(REG_CARDSTATUS & 0x1))
 
 typedef struct {
@@ -91,6 +93,37 @@ u32 SetSecureAreaEncryption(bool encrypted) {
     return 0;
 }
 
+static u32 CtrSaveSize(CartData* cdata) {
+    NcsdHeader* ncsd = (NcsdHeader*) (void*) cdata->header;
+    u32 ncch_sector = ncsd->partitions[0].offset;
+
+    // Load header and ExHeader for first partition
+    u8 buffer[0x400];
+    CTR_CmdReadData(ncch_sector, 0x200, 2, buffer);
+    NcchHeader* ncch = (NcchHeader*) (void*) buffer;
+    if (ValidateNcchHeader(ncch) != 0) {
+        return 0;
+    }
+
+    // Ensure first partition has ExHeader
+    if (ncch->size_exthdr < 0x200) {
+        return 0;
+    }
+
+    // Decrypt ExHeader
+    if ((NCCH_ENCRYPTED(ncch)) && (SetupNcchCrypto(ncch, NCCH_NOCRYPTO) == 0)) {
+        DecryptNcch(buffer + NCCH_EXTHDR_OFFSET, NCCH_EXTHDR_OFFSET, sizeof(buffer) - NCCH_EXTHDR_OFFSET, ncch, NULL);
+    }
+    u64 savesize = getle64(buffer + NCCH_EXTHDR_OFFSET + 0x1C0);
+
+    // check our work
+    if (savesize <= UINT32_MAX) {
+        return (u32) savesize;
+    } else {
+        return 0;
+    }
+}
+
 u32 InitCartRead(CartData* cdata) {
     get_dstime(&init_time);
     encrypted_sa = false;
@@ -151,11 +184,15 @@ u32 InitCartRead(CartData* cdata) {
         memset(priv_header + 0x48, 0xFF, 8);
 
         // save data
-        u32 card2_offset = getle32(cdata->header + 0x200);
-        if ((card2_offset != 0xFFFFFFFF) || (CardSPIGetCardSPIType(&(cdata->save_type), 0) != 0)) {
+        const u32 card2_offset = getle32(cdata->header + 0x200);
+        const u32 save_size = CtrSaveSize(cdata);
+        if ((card2_offset == 0xFFFFFFFF) && (save_size > 0)) {
+            cdata->save_type = (CardSPIType) { FLASH_CTR_GENERIC, false };
+            cdata->save_size = save_size;
+        } else {
             cdata->save_type = (CardSPIType) { NO_CHIP, false };
+            cdata->save_size = 0;
         }
-        cdata->save_size = CardSPIGetCapacity(cdata->save_type);
     } else { // NTR/TWL cartridges
         // NTR header
         TwlHeader* nds_header = (void*)cdata->header;
