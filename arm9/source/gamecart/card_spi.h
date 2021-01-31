@@ -77,7 +77,7 @@ int CardSPIWriteSaveData(CardSPIType type, u32 offset, const void* data, u32 siz
 int CardSPIReadSaveData(CardSPIType type, u32 offset, void* data, u32 size);
 
 int CardSPIEraseSector(CardSPIType type, u32 offset);
-int CardSPIErase(CardSPIType type);
+int CardSPIErase(CardSPIType type, u32 capacity);
 
 #ifdef __cplusplus
 }

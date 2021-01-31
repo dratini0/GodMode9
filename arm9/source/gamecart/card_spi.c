@@ -268,7 +268,6 @@ int CardSPIWriteSaveData(CardSPIType type, u32 offset, const void* data, u32 siz
     if (type.chip == NO_CHIP) return 1;
 
     if (size == 0) return 0;
-    size = min(size, CardSPIGetCapacity(type) - offset);
     u32 end = offset + size;
     u32 pos = offset;
     u32 writeSize = type.chip->writeSize;
@@ -343,8 +342,6 @@ int CardSPIReadSaveData(CardSPIType type, u32 offset, void* data, u32 size) {
     int res = CardSPIWaitWriteEnd(type, 1000);
     if (res) return res;
 
-    size = (size <= CardSPIGetCapacity(type) - offset) ? size : CardSPIGetCapacity(type) - offset;
-
     return type.chip->readSaveData(type, offset, data, size);
 }
 
@@ -375,8 +372,8 @@ int CardSPIEraseSector(CardSPIType type, u32 offset) {
     return type.chip->eraseSector(type, offset);
 }
 
-int CardSPIErase(CardSPIType type) {
-    for (u32 pos = 0; pos < CardSPIGetCapacity(type); pos += CardSPIGetEraseSize(type)) {
+int CardSPIErase(CardSPIType type, u32 capacity) {
+    for (u32 pos = 0; pos < capacity; pos += CardSPIGetEraseSize(type)) {
         int res = CardSPIEraseSector(type, pos);
         if(res) return res;
     }
