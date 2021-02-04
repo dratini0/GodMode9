@@ -7,6 +7,9 @@
 #include "ncch.h"
 #include "ncsd.h"
 #include "rtc.h"
+#include "ui.h"
+#include "vff.h"
+#include "scripting.h"
 
 #define CART_INSERTED (!(REG_CARDSTATUS & 0x1))
 
@@ -367,4 +370,35 @@ u32 WriteCartSave(const u8* buffer, u64 offset, u64 count, CartData* cdata) {
     if (offset >= cdata->save_size) return 1;
     if (offset + count > cdata->save_size) count = cdata->save_size - offset;
     return (CardSPIWriteSaveData(cdata->spi_save_type, offset, buffer, count) == 0) ? 0 : 1;
+}
+
+void GamecartTestFunc(CartData* cdata) {
+    FIL f;
+    u8 buf[0x200];
+    u8 log_buf[0x1000];
+    const char* const NAME = "9:/test.log";
+    u8* const log_end = log_buf + sizeof(log_buf);
+    size_t bw = 0;
+
+    fvx_open(&f, NAME, FA_WRITE | FA_CREATE_NEW);
+    for (u32 cmd = 0; cmd < 0x100; cmd++) {
+        if (cmd == 0x83) continue;
+        if (cmd == 0xA2) continue;
+        if (cmd == 0xC6) continue;
+        if (cmd == 0x82) continue;
+        if (cmd == 0xBF) continue;
+        if (cmd == 0xC5) continue;
+
+        ShowProgress(cmd, 0x100, "HACKING IN PROGRESS");
+        CTR_TryCommand(cmd << 24, buf);
+        u8* log_ptr = log_buf;
+        log_ptr += snprintf(log_ptr, sizeof(log_buf), "\n\nTrying command %02lx...\nResult: \n", cmd);
+        for(size_t i = 0; i < sizeof(buf); i++) {
+            log_ptr += snprintf(log_ptr, log_end - log_ptr, "%02lx ", buf[i]);
+        }
+        fvx_write(&f, log_buf, log_ptr - log_buf, &bw);
+    }
+    fvx_close(&f);
+
+    FileTextViewer(NAME, false);
 }

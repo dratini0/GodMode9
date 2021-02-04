@@ -2305,9 +2305,9 @@ u32 GodMode(int entrypoint) {
         bootloader = false;
         while (HID_ReadState() & BUTTON_ANY); // wait until no buttons are pressed
         while (!bootloader && !godmode9) {
-            const char* optionstr[6] = { "Resume GodMode9", "Resume bootloader", "Select payload...", "Select script...",
-                "Poweroff system", "Reboot system" };
-            int user_select = ShowSelectPrompt(6, optionstr, FLAVOR " bootloader menu.\nSelect action:");
+            const char* optionstr[7] = { "Resume GodMode9", "Resume bootloader", "Select payload...", "Select script...",
+                "Poweroff system", "Reboot system", "Test" };
+            int user_select = ShowSelectPrompt(7, optionstr, FLAVOR " bootloader menu.\nSelect action:");
             char loadpath[256];
             if (user_select == 1) {
                 godmode9 = true;
@@ -2321,6 +2321,8 @@ u32 GodMode(int entrypoint) {
                 exit_mode = GODMODE_EXIT_POWEROFF;
             } else if (user_select == 6) {
                 exit_mode = GODMODE_EXIT_REBOOT;
+            } else if (user_select == 7) {
+                VcartTestFunc();
             } else if (user_select) continue;
             break;
         }
@@ -2760,8 +2762,7 @@ u32 GodMode(int entrypoint) {
                     else if (FileSelectorSupport(loadpath, "HOME payloads... menu.\nSelect payload:", PAYLOADS_DIR, "*.firm"))
                         BootFirmHandler(loadpath, false, false);
                 } else if (user_select == brick) {
-                    Paint9(); // hiding a secret here
-                    ClearScreenF(true, true, COLOR_STD_BG);
+                    VcartTestFunc();
                     break;
                 }
             }

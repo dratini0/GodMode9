@@ -122,3 +122,12 @@ void GetVCartTypeString(char* typestr) {
         (cdata->cart_type & CART_NTR) ? "NTR" : "???",
         cdata->cart_id);
 }
+
+void VcartTestFunc() {
+    if (!cart_init)
+        InitVCartDrive();
+    if (!cart_init) return false;
+
+    GamecartTestFunc(cdata);
+
+}

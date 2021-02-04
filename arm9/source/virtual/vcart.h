@@ -9,3 +9,4 @@ int ReadVCartFile(const VirtualFile* vfile, void* buffer, u64 offset, u64 count)
 int WriteVCartFile(const VirtualFile* vfile, const void* buffer, u64 offset, u64 count);
 u64 GetVCartDriveSize(void);
 void GetVCartTypeString(char* typestr);
+void VcartTestFunc();

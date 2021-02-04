@@ -42,3 +42,4 @@ u32 ReadCartPrivateHeader(void* buffer, u64 offset, u64 count, CartData* cdata);
 u32 ReadCartInfo(u8* buffer, u64 offset, u64 count, CartData* cdata);
 u32 ReadCartSave(u8* buffer, u64 offset, u64 count, CartData* cdata);
 u32 WriteCartSave(const u8* buffer, u64 offset, u64 count, CartData* cdata);
+void GamecartTestFunc(CartData* cdata);
