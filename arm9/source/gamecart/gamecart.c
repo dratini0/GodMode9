@@ -389,24 +389,10 @@ static void DumpData(FIL* f, u32 cmd, u8* data, size_t size)
 void GamecartTestFunc(CartData* cdata) {
     FIL f;
     u8 buf[0x200];
-    const char* const NAME = "9:/test4.log";
+    const char* const NAME = OUTPUT_PATH "/test5.log";
 
     fvx_open(&f, NAME, FA_WRITE | FA_CREATE_NEW);
 
-    CTR_TryCommand(0xC3 << 24, buf);
-    DumpData(&f, 0xC3, buf, sizeof(buf));
-    CTR_TryCommand(0xC3 << 24, buf);
-    DumpData(&f, 0xC3, buf, sizeof(buf));
-    CTR_TryCommand(0xC3 << 24, buf);
-    DumpData(&f, 0xC3, buf, sizeof(buf));
-    CTR_TryCommand(0xE9 << 24, buf);
-    DumpData(&f, 0xE9, buf, sizeof(buf));
-    CTR_TryCommand(0xE9 << 24, buf);
-    DumpData(&f, 0xE9, buf, sizeof(buf));
-    CTR_TryCommand(0xE9 << 24, buf);
-    DumpData(&f, 0xE9, buf, sizeof(buf));
-    CTR_TryCommand(0xC3 << 24, buf);
-    DumpData(&f, 0xC3, buf, sizeof(buf));
     CTR_TryCommand(0xE9 << 24, buf);
     DumpData(&f, 0xE9, buf, sizeof(buf));
     CTR_TryCommand(0xE9 << 24, buf);
@@ -427,6 +413,20 @@ void GamecartTestFunc(CartData* cdata) {
     DumpData(&f, 0xC3, buf, sizeof(buf));
     CTR_TryCommand(0xC3 << 24, buf);
     DumpData(&f, 0xC3, buf, sizeof(buf));
+    CTR_TryCommand(0xE9 << 24, buf);
+    DumpData(&f, 0xE9, buf, sizeof(buf));
+    CTR_TryCommand(0xE9 << 24, buf);
+    DumpData(&f, 0xE9, buf, sizeof(buf));
+    CTR_TryCommand(0xE9 << 24, buf);
+    DumpData(&f, 0xE9, buf, sizeof(buf));
+    CTR_TryCommand(0xC3 << 24, buf);
+    DumpData(&f, 0xC3, buf, sizeof(buf));
+    CTR_TryCommand(0xE9 << 24, buf);
+    DumpData(&f, 0xE9, buf, sizeof(buf));
+    CTR_TryCommand(0xE9 << 24, buf);
+    DumpData(&f, 0xE9, buf, sizeof(buf));
+    CTR_TryCommand(0xE9 << 24, buf);
+    DumpData(&f, 0xE9, buf, sizeof(buf));
 
     fvx_close(&f);
 
