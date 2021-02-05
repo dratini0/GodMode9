@@ -39,7 +39,7 @@ void CTR_CmdReadHeader(void* buffer)
 void CTR_TryCommand(u32 cmd, void* buffer)
 {
     const u32 readheader_cmd[4] = { cmd, 0x00000000, 0x00000000, 0x00000000 };
-    CTR_SendCommand(readheader_cmd, 0x4, 1, 0x701002C, buffer);
+    CTR_SendCommand(readheader_cmd, 0x200, 1, 0x704802C, buffer);
 }
 
 void CTR_CmdReadUniqueID(void* buffer)
