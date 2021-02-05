@@ -374,9 +374,9 @@ u32 WriteCartSave(const u8* buffer, u64 offset, u64 count, CartData* cdata) {
 
 void GamecartTestFunc(CartData* cdata) {
     FIL f;
-    u8 buf[0x200];
+    u8 buf[0x40];
     u8 log_buf[0x1000];
-    const char* const NAME = "9:/test.log";
+    const char* const NAME = "9:/test2.log";
     u8* const log_end = log_buf + sizeof(log_buf);
     size_t bw = 0;
 
