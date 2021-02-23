@@ -2,6 +2,7 @@
 #include "protocol.h"
 #include "command_ctr.h"
 #include "command_ntr.h"
+#include "command_ntr_retail_nand.h"
 #include "card_spi.h"
 #include "nds.h"
 #include "ncch.h"
@@ -262,6 +263,9 @@ u32 InitCartRead(CartData* cdata) {
                 if (!NTR_Secure_Init(cdata->storage, NULL, Cart_GetID(), 1)) return 1;
             }
         }
+
+        NTRRetailNand_Init();
+        NTRRetailNand_SetSavePosition(0x0);
 
         // store encrypted secure area
         memcpy(cdata->storage, secure_area_enc, 0x4000);
