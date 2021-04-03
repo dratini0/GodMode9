@@ -11,6 +11,14 @@
 #define HID_TOUCH_MAXPOINT  (0x1000)
 #define HID_TOUCH_MIDPOINT  (HID_TOUCH_MAXPOINT / 2)
 
+#define DELAY_INITIAL 256
+#define DELAY_SUBSEQUENT 144
+
+typedef enum {
+    DELAY_STATE_NONE,
+    DELAY_STATE_INITIAL,
+    DELAY_STATE_SUBSEQUENT,
+} DelayState;
 
 static void SetNotificationLED(u32 period_ms, u32 rgb565_color)
 {
@@ -155,7 +163,7 @@ static u32 HID_ConvertCPAD(s16 cpad_x, s16 cpad_y)
 
 
 u32 InputWait(u32 timeout_sec) {
-    static u64 delay = 0;
+    static DelayState delay_state = DELAY_STATE_NONE;
     u64 timer = timer_start();
     s16 cpad_x, cpad_y;
 
@@ -173,7 +181,17 @@ u32 InputWait(u32 timeout_sec) {
         while (HID_ReadState() & SHELL_CLOSED);
     }
 
-    delay = delay ? 144 : 256;
+    //Advance the delay state machine
+    switch (delay_state) {
+    case DELAY_STATE_NONE:
+        delay_state = DELAY_STATE_INITIAL;
+        break;
+
+    case DELAY_STATE_INITIAL:
+    case DELAY_STATE_SUBSEQUENT:
+        delay_state = DELAY_STATE_SUBSEQUENT;
+        break;
+    }
 
     do {
         u32 newpad = HID_ReadState();
@@ -198,7 +216,7 @@ u32 InputWait(u32 timeout_sec) {
                 return state ? SD_INSERT : SD_EJECT;
 
             oldpad = 0;
-            delay = 0;
+            delay_state = DELAY_STATE_NONE;
             continue;
         }
 
@@ -206,6 +224,24 @@ u32 InputWait(u32 timeout_sec) {
         // if any of those are held, don't wait for key changes
         // but do insert a small latency to make
         // sure any menus don't go flying off
+        u64 delay;
+        s16 cpad_didsplacement = max(abs(cpad_x), abs(cpad_y));
+        u64 delay_cpad = cpad_didsplacement ? (2 * DELAY_INITIAL * 150 / cpad_didsplacement) : 0;
+
+        switch (delay_state) {
+        case DELAY_STATE_NONE:
+            delay = 0;
+            break;
+
+        case DELAY_STATE_INITIAL:
+            delay = max(DELAY_INITIAL, delay_cpad);
+            break;
+
+        case DELAY_STATE_SUBSEQUENT:
+            delay = delay_cpad ? delay_cpad : DELAY_SUBSEQUENT;
+            break;
+        }
+
         if ((newpad == oldpad) &&
             (!(newpad & BUTTON_ARROW) ||
             (delay && (timer_msec(timer) < delay))))
