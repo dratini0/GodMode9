@@ -136,21 +136,21 @@ const TouchBox* TouchBoxGet(u32* id, const u16 x, const u16 y, const TouchBox* t
 
 static u32 HID_ConvertCPAD(s16 cpad_x, s16 cpad_y)
 {
-    u32 ret = 0;
-
-    if (cpad_x > 0) {
-        ret |= BUTTON_RIGHT;
-    } else if (cpad_x < 0) {
-        ret |= BUTTON_LEFT;
+    if (abs(cpad_x) > abs(cpad_y)) {
+        if (cpad_x > 0) {
+            return BUTTON_RIGHT;
+        } else if (cpad_x < 0) {
+            return BUTTON_LEFT;
+        }
+    } else if (cpad_y) {
+        if (cpad_y > 0) {
+            return BUTTON_UP;
+        } else if (cpad_y < 0) {
+            return BUTTON_DOWN;
+        }
     }
 
-    if (cpad_y > 0) {
-        ret |= BUTTON_UP;
-    } else if (cpad_y < 0) {
-        ret |= BUTTON_DOWN;
-    }
-
-    return ret;
+    return 0;
 }
 
 

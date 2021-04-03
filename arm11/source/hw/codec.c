@@ -26,7 +26,7 @@
 #include "hw/codec.h"
 #include <spi.h>
 
-#define CPAD_THRESH_X (750)
+#define CPAD_THRESH_X (150)
 #define CPAD_THRESH_Y (150)
 
 /* SPI stuff */
