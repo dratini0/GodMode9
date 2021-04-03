@@ -70,9 +70,12 @@ bool ShowTouchCalibrationDialog(void)
             u32 pressed = InputWait(0);
             if (pressed & BUTTON_B) {
                 return false;
-            } else if (pressed & BUTTON_TOUCH) {
-                calibrations[current_dot].ts_raw = HID_ReadRawTouchState();
-                break;
+            } else {
+                u32 ts_raw = HID_ReadRawTouchState();
+                if (ts_raw & BIT(31)) {
+                    calibrations[current_dot].ts_raw = ts_raw;
+                    break;
+                }
             }
         }
     }

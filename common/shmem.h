@@ -23,9 +23,10 @@
 #define SHMEM_BUFFER_SIZE 2048
 
 typedef struct {
-	union {
-		struct { u32 keys, touch; };
-		u64 full;
+	struct {
+		u32 keys;
+		u32 touch;
+		u32 cpad;
 	} hidState;
 
 	union {

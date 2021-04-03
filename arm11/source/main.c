@@ -70,7 +70,7 @@ static void vblankUpdate(void)
 		GFX_powerOnBacklights(GFX_BLIGHT_BOTH);
 	}
 
-	sharedMem.hidState.full = HID_GetState();
+	HID_GetState(&sharedMem.hidState.keys, &sharedMem.hidState.touch, &sharedMem.hidState.cpad);
 }
 
 static u32 pxiRxUpdate(u32 *args)

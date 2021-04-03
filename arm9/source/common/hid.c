@@ -35,6 +35,13 @@ u32 HID_ReadRawTouchState(void)
     return ARM_GetSHMEM()->hidState.touch;
 }
 
+void HID_ReadCpadState(s16 *cpad_x, s16 *cpad_y)
+{
+    u32 cpad = ARM_GetSHMEM()->hidState.cpad;
+    *cpad_x = cpad >> 16;
+    *cpad_y = cpad;
+}
+
 // ts_mult indicates a scalar for each axis
 // if |ts_mult| > 1 => point must be "scaled out"
 // if |ts_mult| < 1 => point must be "scaled in"
@@ -127,11 +134,35 @@ const TouchBox* TouchBoxGet(u32* id, const u16 x, const u16 y, const TouchBox* t
     return NULL;
 }
 
+static u32 HID_ConvertCPAD(s16 cpad_x, s16 cpad_y)
+{
+    u32 ret = 0;
+
+    if (cpad_x > 0) {
+        ret |= BUTTON_RIGHT;
+    } else if (cpad_x < 0) {
+        ret |= BUTTON_LEFT;
+    }
+
+    if (cpad_y > 0) {
+        ret |= BUTTON_UP;
+    } else if (cpad_y < 0) {
+        ret |= BUTTON_DOWN;
+    }
+
+    return ret;
+}
+
+
 u32 InputWait(u32 timeout_sec) {
     static u64 delay = 0;
     u64 timer = timer_start();
+    s16 cpad_x, cpad_y;
 
     u32 oldpad = HID_ReadState();
+    HID_ReadCpadState(&cpad_x, &cpad_y);
+    oldpad |= HID_ConvertCPAD(cpad_x, cpad_y);
+
     u32 oldcart = CART_STATE;
     u32 oldsd = SD_STATE;
 
@@ -146,6 +177,9 @@ u32 InputWait(u32 timeout_sec) {
 
     do {
         u32 newpad = HID_ReadState();
+
+        HID_ReadCpadState(&cpad_x, &cpad_y);
+        newpad |= HID_ConvertCPAD(cpad_x, cpad_y);
 
         // handle closed shell (wait for open)
         if (newpad & SHELL_CLOSED) {

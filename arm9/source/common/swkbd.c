@@ -197,21 +197,19 @@ static char KeyboardWait(TouchBox* swkbd, bool uppercase) {
         else if (pressed & BUTTON_RIGHT) return KEY_RIGHT;
         else if (pressed & BUTTON_LEFT) return KEY_LEFT;
         else if (pressed & BUTTON_SELECT) return KEY_SWITCH;
-        else if (pressed & BUTTON_TOUCH) break;
+        // process touch input
+        else if (HID_ReadTouchState(&x, &y)) {
+            const TouchBox* tb = TouchBoxGet(&id, x, y, swkbd, 0);
+            if (tb) {
+                if (id == KEY_TXTBOX) break; // immediately break on textbox
+                DrawKey(tb, true, uppercase);
+                while(HID_ReadTouchState(&x, &y) && (tb == TouchBoxGet(NULL, x, y, swkbd, 0)));
+                DrawKey(tb, false, uppercase);
+            }
+            return (uppercase) ? to_uppercase((char) id) : (char) id;
+        };
     }
 
-    // process touch input
-    while(HID_ReadTouchState(&x, &y)) {
-        const TouchBox* tb = TouchBoxGet(&id, x, y, swkbd, 0);
-        if (tb) {
-            if (id == KEY_TXTBOX) break; // immediately break on textbox
-            DrawKey(tb, true, uppercase);
-            while(HID_ReadTouchState(&x, &y) && (tb == TouchBoxGet(NULL, x, y, swkbd, 0)));
-            DrawKey(tb, false, uppercase);
-        }
-    }
-
-    return (uppercase) ? to_uppercase((char) id) : (char) id;
 }
 
 bool ShowKeyboard(char* inputstr, const u32 max_size, const char *format, ...) {

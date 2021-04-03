@@ -26,40 +26,12 @@
 
 #define REG_HID	(~(*(vu16*)(0x10146000)) & BUTTON_ANY)
 
-static u32 HID_ConvertCPAD(s16 cpad_x, s16 cpad_y)
-{
-	u32 ret = 0;
-
-	if (cpad_x > 0) {
-		ret |= BUTTON_RIGHT;
-	} else if (cpad_x < 0) {
-		ret |= BUTTON_LEFT;
-	}
-
-	if (cpad_y > 0) {
-		ret |= BUTTON_UP;
-	} else if (cpad_y < 0) {
-		ret |= BUTTON_DOWN;
-	}
-
-	return ret;
-}
-
-u64 HID_GetState(void)
+void HID_GetState(u32 *keys, u32 *touch, u32 *cpad)
 {
 	CODEC_Input codec;
-	u64 ret = 0;
-
 	CODEC_Get(&codec);
 
-	ret = REG_HID | mcuGetSpecialHID();
-	if (!(ret & BUTTON_ARROW))
-		ret |= HID_ConvertCPAD(codec.cpad_x, codec.cpad_y);
-
-	if (codec.ts_x <= 0xFFF)
-		ret |= BUTTON_TOUCH;
-
-	ret |= (((u64)codec.ts_x << 16) | (u64)codec.ts_y) << 32;
-
-	return ret;
+	*keys = REG_HID | mcuGetSpecialHID();
+	*touch = ((u32)codec.ts_x << 16) | (u32)codec.ts_y;
+	*cpad = ((u32)codec.cpad_x << 16) | (u32)codec.cpad_y;
 }

@@ -21,4 +21,4 @@
 #include <types.h>
 #include <hid_map.h>
 
-u64 HID_GetState(void);
+void HID_GetState(u32 *keys, u32 *touch, u32 *cpad);

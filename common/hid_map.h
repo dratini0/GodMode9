@@ -22,7 +22,6 @@
 #define BUTTON_POWER  ((u32)1 << 12)
 #define BUTTON_HOME   ((u32)1 << 13)
 #define BUTTON_WIFI   ((u32)1 << 14)
-#define BUTTON_TOUCH  ((u32)1 << 15)
 
 #define SHELL_OPEN    ((u32)1 << 16)
 #define SHELL_CLOSED  ((u32)1 << 17)
